@@ -21,7 +21,6 @@ prebuilt_files = [
     'mail_gra.narc',
     'menu_gra.narc',
     'mysign.narc',
-    'mystery.narc',
     'ntag_gra.narc',
     'nutmixer.narc',
     'oekaki.narc',
