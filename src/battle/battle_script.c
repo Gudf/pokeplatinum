@@ -10,6 +10,7 @@
 #include "constants/trainer.h"
 #include "generated/abilities.h"
 #include "generated/genders.h"
+#include "generated/items.h"
 
 #include "struct_decls/battle_system.h"
 #include "struct_decls/pc_boxes_decl.h"
@@ -38,6 +39,7 @@
 #include "overlay012/ov12_02235E94.h"
 #include "overlay012/struct_ov12_02237728.h"
 
+#include "bag.h"
 #include "bg_window.h"
 #include "char_transfer.h"
 #include "dexmode_checker.h"
@@ -2432,6 +2434,10 @@ static BOOL BtlCmd_CalcExpGain(BattleSystem *battleSys, BattleContext *battleCtx
                     totalMonsWithExpShare++;
                 }
             }
+        }
+
+        if (Bag_GetItemQuantity(battleSys->unk_58, ITEM_EXP_SHARE, HEAP_ID_BATTLE)) {
+            totalMonsWithExpShare = 1;
         }
 
         u16 exp = SpeciesData_GetSpeciesValue(battleCtx->battleMons[battleCtx->faintedMon].species, SPECIES_DATA_BASE_EXP_REWARD);
@@ -9928,7 +9934,7 @@ static void BattleScript_GetExpTask(SysTask *task, void *inData)
         item = Pokemon_GetValue(mon, MON_DATA_HELD_ITEM, NULL);
         itemEffect = Item_LoadParam(item, ITEM_PARAM_HOLD_EFFECT, HEAP_ID_BATTLE);
 
-        if (itemEffect == HOLD_EFFECT_EXP_SHARE || (data->battleCtx->sideGetExpMask[battler] & FlagIndex(slot))) {
+        if (Bag_GetItemQuantity(data->battleSys->unk_58, ITEM_EXP_SHARE, HEAP_ID_BATTLE) || itemEffect == HOLD_EFFECT_EXP_SHARE || (data->battleCtx->sideGetExpMask[battler] & FlagIndex(slot))) {
             break;
         }
     }
@@ -9966,7 +9972,7 @@ static void BattleScript_GetExpTask(SysTask *task, void *inData)
                 totalExp = data->battleCtx->gainedExp;
             }
 
-            if (itemEffect == HOLD_EFFECT_EXP_SHARE) {
+            if (itemEffect == HOLD_EFFECT_EXP_SHARE || Bag_GetItemQuantity(data->battleSys->unk_58, ITEM_EXP_SHARE, HEAP_ID_BATTLE)) {
                 totalExp += data->battleCtx->sharedExp;
             }
 
