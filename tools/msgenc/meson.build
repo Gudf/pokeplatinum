@@ -19,6 +19,10 @@ msgenc_exe = executable('msgenc',
         '-Wextra',
         '-Wpedantic',
         '-Wno-unused-parameter',
+        '-fsanitize=address',
+    ],
+    link_args: [
+        '-fsanitize=address'
     ],
     native: true,
     dependencies: [

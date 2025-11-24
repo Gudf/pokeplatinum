@@ -29,6 +29,7 @@ static inline void usage() {
     cout << "-v            Print the program version and exit." << endl;
     cout << "-h            Print this message and exit." << endl;
     cout << "-D DUMPNAME   Dump the intermediate binary (after decryption or before encryption)." << endl;
+    cout << "-l LANGUAGE   Language key to read from/write to. Default: en_US" << endl;
 }
 
 int do_main(MessagesConverter* &converter, int argc, char ** argv) {

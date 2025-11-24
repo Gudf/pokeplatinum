@@ -30,6 +30,8 @@ Options::Options(int argc, char **argv) {
             textFormat = FMT_JSON;
         } else if (arg == "--gmm") {
             textFormat = FMT_GAMEFREAK_GMM;
+        } else if (arg == "-l") {
+            lang = argv[++i];
         } else if (arg[0] != '-') {
             posargs.push_back(arg);
         } else {

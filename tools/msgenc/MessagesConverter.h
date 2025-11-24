@@ -59,6 +59,7 @@ protected:
     string binfilename;
     string headerfilename;
     TextFormat text_format = FMT_PLAIN_TEXT;
+    string lang;
 
     MsgArcHeader header = {};
     vector<MsgAlloc> alloc_table;
@@ -80,7 +81,8 @@ public:
         charmapfilename(options.charmap),
         binfilename(options.posargs[1]),
         headerfilename(options.gmm_header),
-        text_format(options.textFormat)
+        text_format(options.textFormat),
+        lang(options.lang)
     {
         header.key = (options.key == 0) ? CalcCRC() : static_cast<uint16_t>(options.key);
     }
@@ -107,6 +109,10 @@ public:
 
     string &GetHeaderFilename() {
         return headerfilename;
+    }
+    
+    string &GetLang() {
+        return lang;
     }
 };
 

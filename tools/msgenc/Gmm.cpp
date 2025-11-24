@@ -4,7 +4,6 @@
 #include <string>
 
 static const char WINCTXNAME[] = "window_context_name";
-static const char LANGUAGE[] = "English";
 static const char JAPANESE[] = "日本語";
 
 // Reads header constants from the supplied file.
@@ -81,10 +80,11 @@ int GMM::FromFile(MessagesConverter &converter) {
     int i = 0;
     int key = GMM_KEY_NOT_DEFINED;
     string rowname_pref = filename.substr(filename.find_last_of('/') + 1).substr(0, filename.find_first_of('.'));
+    string lang_key = converter.GetLang();
     for (const auto &subnode : node.children()) {
         if (strcmp(subnode.name(), "row") == 0) {
-            const auto &language = subnode.find_child([](const auto &n) {
-                return strcmp(n.name(), "language") == 0 && strcmp(n.attribute("name").value(), LANGUAGE) == 0;
+            const auto &language = subnode.find_child([lang_key](const auto &n) {
+                return strcmp(n.name(), "language") == 0 && strcmp(n.attribute("name").value(), lang_key.c_str()) == 0;
             });
             const auto &windowcontext = subnode.find_child([](const auto &n) {
                 return strcmp(n.name(), "attribute") == 0 && strcmp(n.attribute("name").value(), WINCTXNAME) == 0;
@@ -127,7 +127,7 @@ void GMM::ToFile(MessagesConverter &converter) {
     }
     auto it = id_strings.cbegin();
     auto body = doc.append_child("body");
-    body.append_attribute("language").set_value(LANGUAGE);
+    body.append_attribute("language").set_value(converter.GetLang().c_str());
     if (body.empty()) {
         throw runtime_error("failed to create gmm body node");
     }
@@ -157,7 +157,7 @@ void GMM::ToFile(MessagesConverter &converter) {
         if (language.empty()) {
             throw runtime_error("failed to create gmm language node");
         }
-        language.append_attribute("name").set_value(LANGUAGE);
+        language.append_attribute("name").set_value(converter.GetLang().c_str());
         auto windowattr = windowcontextname.append_child(pugi::xml_node_type::node_pcdata);
         if (message.find_first_not_of(' ') == string::npos) {
             string buf;

@@ -31,6 +31,7 @@ struct Options {
     string dumpBinary;
     string gmm_header = "";
     TextFormat textFormat = FMT_PLAIN_TEXT;
+    string lang = "en_US";
     Options(int argc, char ** argv);
 };
 

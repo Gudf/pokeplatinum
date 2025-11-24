@@ -138,7 +138,7 @@ int Json::FromFile(MessagesConverter &converter) {
         string message;
         auto membId = entry.FindMember("id");
         auto membGarbage = entry.FindMember("garbage");
-        auto membText = entry.FindMember("en_US"); // TODO: Multi-language support
+        auto membText = entry.FindMember(converter.GetLang().c_str()); // TODO: Multi-language support
 
         if (membId == entry.MemberEnd()) {
             sprintf(errbuf, "Bank.messages[%d]: missing required member `id`.", i);
@@ -159,10 +159,10 @@ int Json::FromFile(MessagesConverter &converter) {
         }
 
         if (membText == entry.MemberEnd()) {
-            sprintf(errbuf, "Bank.messages[%d]: missing required member `en_US`.", i);
+            sprintf(errbuf, "Bank.messages[%d]: missing required member `%s`.", i, converter.GetLang().c_str());
             throw runtime_error(errbuf);
         } else if (!membText->value.IsString() && !membText->value.IsArray()) {
-            sprintf(errbuf, "Bank.messages[%d].en_US: expected a string or multi-line array of strings.", i);
+            sprintf(errbuf, "Bank.messages[%d].%s: expected a string or multi-line array of strings.", i, converter.GetLang().c_str());
             throw runtime_error(errbuf);
         }
 
@@ -178,7 +178,7 @@ int Json::FromFile(MessagesConverter &converter) {
             }
         } else {
         content_error:
-            sprintf(errbuf, "Bank.messages[%d].en_US: expected a string or array of strings.", i);
+            sprintf(errbuf, "Bank.messages[%d].%s: expected a string or array of strings.", i, converter.GetLang().c_str());
             throw runtime_error(errbuf);
         }
 
@@ -230,10 +230,11 @@ void Json::ToFile(MessagesConverter &converter) {
             entry.AddMember("garbage", garbage, doc.GetAllocator());
         } else {
             vector<string> message_lines = SplitMessage(message, true);
+            rapidjson::Value lang_key(converter.GetLang().c_str(), doc.GetAllocator());
             if (message_lines.size() == 1) {
                 rapidjson::Value entry_message(rapidjson::kStringType);
                 entry_message.SetString(message.c_str(), message.size(), doc.GetAllocator());
-                entry.AddMember("en_US", entry_message, doc.GetAllocator());
+                entry.AddMember(lang_key, entry_message, doc.GetAllocator());
             } else {
                 rapidjson::Value entry_lines(rapidjson::kArrayType);
                 for (const auto& line : message_lines) {
@@ -241,7 +242,7 @@ void Json::ToFile(MessagesConverter &converter) {
                     entry_line.SetString(line.c_str(), line.size(), doc.GetAllocator());
                     entry_lines.PushBack(entry_line, doc.GetAllocator());
                 }
-                entry.AddMember("en_US", entry_lines, doc.GetAllocator());
+                entry.AddMember(lang_key, entry_lines, doc.GetAllocator());
             }
         }
 
